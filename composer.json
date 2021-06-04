@@ -1,0 +1,36 @@
+{
+    "name": "statikbe/nova-mail-editor",
+    "description": "Customizable mail templates for Laravel in Nova",
+    "keywords": [
+        "laravel",
+        "nova",
+        "statikbe",
+        "statik",
+        "mail",
+        "mails",
+        "template",
+        "custom"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0",
+        "statikbe/laravel-mail-template-engine": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Statikbe\\NovaMailEditor\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Statikbe\\NovaMailEditor\\ToolServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
