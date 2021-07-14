@@ -8,7 +8,7 @@ class TemplateController extends Controller
 {
     public function index(){
         $templateArray = [];
-        $templates = config('mail-editor.templates');
+        $templates = config('mail-template-engine.templates');
 
         foreach($templates as $templateKey => $template){
             $templateArray[$templateKey] = $template::name();
@@ -18,7 +18,7 @@ class TemplateController extends Controller
     }
 
     public function variables($templateKey){
-        $template = config('mail-editor.templates')[$templateKey] ?? null;
+        $template = config('mail-template-engine.templates')[$templateKey] ?? null;
         if (!$template){
             abort(404);
         }

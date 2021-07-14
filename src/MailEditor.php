@@ -8,6 +8,13 @@ use Laravel\Nova\Tool;
 class MailEditor extends Tool
 {
     /**
+     * The locales array for the tool.
+     *
+     * @var array
+     */
+    public static $locales;
+
+    /**
      * Perform any tasks that need to happen when the tool is booted.
      *
      * @return void
@@ -26,5 +33,21 @@ class MailEditor extends Tool
     public function renderNavigation()
     {
         return view('nova-mail-editor::navigation');
+    }
+
+    /**
+     * @param  array  $locales
+     */
+    public static function setLocales(array $locales)
+    {
+        static::$locales = $locales;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLocales(): array
+    {
+        return static::$locales;
     }
 }

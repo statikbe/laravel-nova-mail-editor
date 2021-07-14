@@ -196,10 +196,10 @@ export default {
           required: true
         },
         body: { attribute: 'body', name: __('Body'), required: true },
-        attachments: {
+        /*attachments: {
           attribute: 'attachments',
           name: __('Attachments')
-        }
+        }*/
       };
 
       Object.keys(this.fields).forEach(attribute => {
@@ -333,6 +333,8 @@ export default {
           field.fill(formData);
         });
       });
+
+      formData.append('mail_type', this.$route.params.templateId);
 
       this.errors = null;
 

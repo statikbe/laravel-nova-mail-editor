@@ -22,7 +22,7 @@
         <thead>
           <tr>
             <th class="text-left">
-              Naam
+              {{ __('Name') }}
             </th>
             <th></th>
           </tr>

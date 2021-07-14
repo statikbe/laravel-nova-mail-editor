@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Statikbe\NovaMailEditor\Http\Middleware\Authorize;
+use Statikbe\NovaTranslationManager\TranslationManager;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,17 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->publishes([
+            __DIR__ . '/../config/nova-mail-editor.php' => config_path('nova-mail-editor.php'),
+        ], ['nova-mail-editor', 'config']);
+
+        $supportedLocales = config(
+            'nova-mail-editor.supported_locales',
+            config('app.supported_locales',['en'])
+        );
+
+        MailEditor::setLocales($supportedLocales);
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-mail-editor');
 
         $this->app->booted(function () {
@@ -51,6 +63,8 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/nova-mail-editor.php', 'nova-mail-editor'
+        );
     }
 }

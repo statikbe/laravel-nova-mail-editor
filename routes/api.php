@@ -20,8 +20,9 @@ use Statikbe\NovaMailEditor\Http\Controllers\TemplateController;
 
 Route::get('/mail-templates', [MailTemplateController::class, 'index']);
 Route::post('/mail-templates/store', [MailTemplateController::class, 'store']);
-Route::get('/mail-templates/{mail_template}/edit', [MailTemplateController::class, 'edit']);
-Route::post('/mail-templates/{mail_template}/update', [MailTemplateController::class, 'update']);
+Route::get('/mail-templates/{template}/edit', [MailTemplateController::class, 'edit']);
+Route::post('/mail-templates/{template}/update', [MailTemplateController::class, 'update']);
+Route::post('/mail-templates/{template}/delete', [MailTemplateController::class, 'delete']);
 
 Route::get('/locales', LocaleController::class);
 

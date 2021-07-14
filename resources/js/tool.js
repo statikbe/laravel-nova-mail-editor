@@ -24,7 +24,7 @@ Nova.booting((Vue, router) => {
   // @todo config uit backend laten komen
 
   Vue.prototype.$config = {
-    locales: ['nl', 'fr', 'en', 'de'],
+    locales: ['en'],
     bodyFieldComponent: 'form-trix-field'
   };
 
