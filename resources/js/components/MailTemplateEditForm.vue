@@ -324,7 +324,7 @@ export default {
     },
     submit() {
       const submitUrl = {
-        create: '/mail-templates/create',
+        create: '/mail-templates/store',
         update: `/mail-templates/${this.data.id}/update`
       }[this.action];
 
