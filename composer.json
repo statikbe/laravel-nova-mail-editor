@@ -1,5 +1,5 @@
 {
-    "name": "statikbe/nova-mail-editor",
+    "name": "statikbe/laravel-nova-mail-editor",
     "description": "Customizable mail templates for Laravel in Nova",
     "keywords": [
         "laravel",
