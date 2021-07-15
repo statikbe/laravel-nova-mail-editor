@@ -11,7 +11,7 @@ export default {
   },
   data: () => ({
     mailTemplateData: {
-      mail_type: '',
+      mail_class: '',
       name: '',
       subject: {},
       body: '',

@@ -2,12 +2,12 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Application Supported Locale Configuration
+    | Mail editor supported locales
     |--------------------------------------------------------------------------
     |
     | The application locale determines the possible locales that can be used.
     | You are free to fill this array with any of the locales which will be
-    | supported by the application.
+    | supported by the editor.
     |
     |
     */

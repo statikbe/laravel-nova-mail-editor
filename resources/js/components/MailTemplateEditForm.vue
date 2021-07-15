@@ -5,7 +5,7 @@
         <h2 class="mt-4 mb-2">{{ __('General') }}</h2>
         <div class="card">
           <form-text-field :field="fields.name" />
-          <form-text-field v-show="false" :field="fields.mail_type" />
+          <form-text-field v-show="false" :field="fields.mail_class" />
           <form-text-field v-show="false" :field="fields.design" />
         </div>
         <h2 class="mt-4 mb-2">{{ __('Recipients') }}</h2>
@@ -161,8 +161,8 @@ export default {
 
       this.fields = {
         name: { attribute: 'name', name: __('Name'), required: true },
-        mail_type: {
-          attribute: 'mail_type',
+        mail_class: {
+          attribute: 'mail_class',
           name: __('Mail type'),
           readonly: true
         },
@@ -334,7 +334,7 @@ export default {
         });
       });
 
-      formData.append('mail_type', this.$route.params.templateId);
+      formData.append('mail_class', this.$route.params.templateId);
 
       this.errors = null;
 

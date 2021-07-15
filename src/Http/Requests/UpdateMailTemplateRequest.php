@@ -31,7 +31,7 @@ class UpdateMailTemplateRequest extends FormRequest
             'bcc' => ['nullable', 'email'], //TODO change to array when frontend is done
             //'design' => ['required', 'string'],
             //'render_engine' => ['required', 'string'],
-            'mail_type' => ['required', 'string' ], //TODO: validate mail_type
+            'mail_class' => ['required', 'string' ], //TODO: validate mail_class
         ];
 
         $this->addTranslatableRules($rules);
