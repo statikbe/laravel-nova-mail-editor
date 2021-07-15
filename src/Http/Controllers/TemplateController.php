@@ -8,7 +8,7 @@ class TemplateController extends Controller
 {
     public function index(){
         $templateArray = [];
-        $templates = config('mail-template-engine.templates');
+        $templates = config('mail-template-engine.mails');
 
         foreach($templates as $templateKey => $template){
             $templateArray[$templateKey] = $template::name();
