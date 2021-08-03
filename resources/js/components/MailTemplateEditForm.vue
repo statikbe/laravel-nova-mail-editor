@@ -11,11 +11,17 @@
         <h2 class="mt-4 mb-2">{{ __('Recipients') }}</h2>
         <div class="card">
           <form-select-field-multiple
-            v-if="variables.recipients"
+            v-show="variables.recipients"
             :field="fields.recipients"
           />
-          <form-text-field :field="fields.cc" />
-          <form-text-field :field="fields.bcc" />
+          <form-select-field-multiple
+            :field="fields.cc"
+            :tag-placeholder="__('Click to add email address')"
+          />
+          <form-select-field-multiple
+            :field="fields.bcc"
+            :tag-placeholder="__('Click to add email address')"
+          />
         </div>
       </div>
     </div>
@@ -184,11 +190,13 @@ export default {
         },
         cc: {
           attribute: 'cc',
-          name: __('CC')
+          name: __('CC'),
+          options: []
         },
         bcc: {
           attribute: 'bcc',
-          name: __('BCC')
+          name: __('BCC'),
+          options: []
         },
         subject: {
           attribute: 'subject',
@@ -196,10 +204,10 @@ export default {
           required: true
         },
         body: { attribute: 'body', name: __('Body'), required: true },
-        /*attachments: {
+        attachments: {
           attribute: 'attachments',
           name: __('Attachments')
-        }*/
+        }
       };
 
       Object.keys(this.fields).forEach(attribute => {
@@ -310,7 +318,7 @@ export default {
         `/templates/${this.$route.params.templateId}/variables`
       );
 
-      const recipients = this.variables.recipients;
+      const recipients = this.variables.recipients || {};
 
       this.fields.recipients.value = [];
 
@@ -336,14 +344,14 @@ export default {
 
       formData.append('mail_class', this.$route.params.templateId);
 
-      this.errors = null;
+      this.errors = {};
 
       this.postFormData(submitUrl, formData)
         .then(() => {
           this.$router.push({ name: 'mail-index' });
         })
-        .catch(error => {
-          this.errors = error.data.errors;
+        .catch(response => {
+          this.errors = response.errors;
         });
     }
   }
