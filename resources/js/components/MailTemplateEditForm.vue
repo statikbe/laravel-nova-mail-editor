@@ -4,23 +4,34 @@
       <div class="w-2/3 px-2 py-4">
         <h2 class="mt-4 mb-2">{{ __('General') }}</h2>
         <div class="card">
-          <form-text-field :field="fields.name" />
-          <form-text-field v-show="false" :field="fields.mail_class" />
-          <form-text-field v-show="false" :field="fields.design" />
+          <form-text-field :field="fields.name" :errors="validationErrors" />
+          <form-text-field
+            v-show="false"
+            :field="fields.mail_class"
+            :errors="validationErrors"
+          />
+          <form-text-field
+            v-show="false"
+            :field="fields.design"
+            :errors="validationErrors"
+          />
         </div>
         <h2 class="mt-4 mb-2">{{ __('Recipients') }}</h2>
         <div class="card">
           <form-select-field-multiple
-            v-show="variables.recipients"
+            v-if="variables.recipients"
             :field="fields.recipients"
+            :errors="validationErrors"
           />
           <form-select-field-multiple
             :field="fields.cc"
             :tag-placeholder="__('Click to add email address')"
+            :errors="validationErrors"
           />
           <form-select-field-multiple
             :field="fields.bcc"
             :tag-placeholder="__('Click to add email address')"
+            :errors="validationErrors"
           />
         </div>
       </div>
@@ -34,17 +45,28 @@
             v-show="currentLocale === locale"
             :key="locale"
           >
-            <form-text-field :field="fields[`sender_name___${locale}`]" />
-            <form-text-field :field="fields[`sender_email___${locale}`]" />
-            <form-text-field :field="fields[`subject___${locale}`]" />
+            <form-text-field
+              :field="fields[`sender_name___${locale}`]"
+              :errors="validationErrors"
+            />
+            <form-text-field
+              :field="fields[`sender_email___${locale}`]"
+              :errors="validationErrors"
+            />
+            <form-text-field
+              :field="fields[`subject___${locale}`]"
+              :errors="validationErrors"
+            />
             <div :data-field="`body___${locale}`">
               <component
                 :is="$config.bodyFieldComponent"
                 :field="fields[`body___${locale}`]"
+                :errors="validationErrors"
               />
             </div>
             <form-file-field-multiple
               :field="fields[`attachments___${locale}`]"
+              :errors="validationErrors"
             />
           </div>
         </div>
@@ -114,6 +136,7 @@
 </template>
 
 <script>
+import { Errors } from 'laravel-nova';
 import { tap, each } from 'lodash-es';
 
 import FormEditorjsField from './Form/EditorjsField.vue';
@@ -142,7 +165,8 @@ export default {
     variables: {},
     focusedField: null,
     focusedValue: null,
-    caretPosition: null
+    caretPosition: null,
+    validationErrors: new Errors()
   }),
   created() {
     this.currentLocale = this.$config.locales[0] || 'en';
@@ -344,14 +368,14 @@ export default {
 
       formData.append('mail_class', this.$route.params.templateId);
 
-      this.errors = {};
+      this.validationErrors = new Errors();
 
       this.postFormData(submitUrl, formData)
         .then(() => {
           this.$router.push({ name: 'mail-index' });
         })
-        .catch(response => {
-          this.errors = response.errors;
+        .catch(({ response }) => {
+          this.validationErrors = new Errors(response.data.errors);
         });
     }
   }

@@ -64445,13 +64445,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(60);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_es__ = __webpack_require__(540);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Form_EditorjsField_vue__ = __webpack_require__(681);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Form_EditorjsField_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Form_EditorjsField_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Form_FileFieldMultiple_vue__ = __webpack_require__(693);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Form_FileFieldMultiple_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Form_FileFieldMultiple_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Form_SelectFieldMultiple_vue__ = __webpack_require__(696);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Form_SelectFieldMultiple_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__Form_SelectFieldMultiple_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_laravel_nova__ = __webpack_require__(430);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_laravel_nova___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_laravel_nova__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash_es__ = __webpack_require__(540);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Form_EditorjsField_vue__ = __webpack_require__(681);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Form_EditorjsField_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Form_EditorjsField_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Form_FileFieldMultiple_vue__ = __webpack_require__(693);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Form_FileFieldMultiple_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__Form_FileFieldMultiple_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Form_SelectFieldMultiple_vue__ = __webpack_require__(696);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Form_SelectFieldMultiple_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__Form_SelectFieldMultiple_vue__);
 
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -64573,6 +64575,29 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -64582,9 +64607,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    FormEditorjsField: __WEBPACK_IMPORTED_MODULE_2__Form_EditorjsField_vue___default.a,
-    FormFileFieldMultiple: __WEBPACK_IMPORTED_MODULE_3__Form_FileFieldMultiple_vue___default.a,
-    FormSelectFieldMultiple: __WEBPACK_IMPORTED_MODULE_4__Form_SelectFieldMultiple_vue___default.a
+    FormEditorjsField: __WEBPACK_IMPORTED_MODULE_3__Form_EditorjsField_vue___default.a,
+    FormFileFieldMultiple: __WEBPACK_IMPORTED_MODULE_4__Form_FileFieldMultiple_vue___default.a,
+    FormSelectFieldMultiple: __WEBPACK_IMPORTED_MODULE_5__Form_SelectFieldMultiple_vue___default.a
   },
   props: {
     data: {
@@ -64607,7 +64632,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       variables: {},
       focusedField: null,
       focusedValue: null,
-      caretPosition: null
+      caretPosition: null,
+      validationErrors: new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]()
     };
   },
   created: function created() {
@@ -64825,20 +64851,22 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         update: '/mail-templates/' + this.data.id + '/update'
       }[this.action];
 
-      var formData = Object(__WEBPACK_IMPORTED_MODULE_1_lodash_es__["b" /* tap */])(new FormData(), function (formData) {
-        Object(__WEBPACK_IMPORTED_MODULE_1_lodash_es__["a" /* each */])(_this4.fields, function (field) {
+      var formData = Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["b" /* tap */])(new FormData(), function (formData) {
+        Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["a" /* each */])(_this4.fields, function (field) {
           field.fill(formData);
         });
       });
 
       formData.append('mail_class', this.$route.params.templateId);
 
-      this.errors = {};
+      this.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]();
 
       this.postFormData(submitUrl, formData).then(function () {
         _this4.$router.push({ name: 'mail-index' });
-      }).catch(function (response) {
-        _this4.errors = response.errors;
+      }).catch(function (_ref2) {
+        var response = _ref2.response;
+
+        _this4.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](response.data.errors);
       });
     }
   }
@@ -73210,6 +73238,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -73240,7 +73269,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     var _this = this;
 
     this.value = this.field.value;
-    this.options = this.field.options;
+    this.options = this.field.options || [];
 
     this.field.fill = function (formData) {
       _this.value.forEach(function (item) {
@@ -73249,6 +73278,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     };
   },
 
+
+  watch: {
+    field: {
+      deep: true,
+      handler: function handler(field) {
+        this.options = field.options || [];
+      }
+    }
+  },
 
   methods: {
     addTag: function addTag(value) {
@@ -73282,36 +73320,44 @@ var render = function() {
         "template",
         { slot: "field" },
         [
-          _c("multi-select", {
-            attrs: {
-              options: _vm.options,
-              placeholder: _vm.placeholder,
-              "track-by": "value",
-              label: "label",
-              "select-label": "",
-              "deselect-label": "",
-              "hide-selected": "",
-              multiple: "",
-              taggable: ""
-            },
-            on: { tag: _vm.addTag },
-            scopedSlots: _vm._u([
+          _c(
+            "multi-select",
+            _vm._b(
               {
-                key: "no-options",
-                fn: function() {
-                  return [_c("span")]
+                attrs: {
+                  options: _vm.options,
+                  placeholder: _vm.placeholder,
+                  "track-by": "value",
+                  label: "label",
+                  "select-label": "",
+                  "deselect-label": "",
+                  "hide-selected": "",
+                  multiple: "",
+                  taggable: ""
                 },
-                proxy: true
-              }
-            ]),
-            model: {
-              value: _vm.value,
-              callback: function($$v) {
-                _vm.value = $$v
+                on: { tag: _vm.addTag },
+                scopedSlots: _vm._u([
+                  {
+                    key: "no-options",
+                    fn: function() {
+                      return [_c("span")]
+                    },
+                    proxy: true
+                  }
+                ]),
+                model: {
+                  value: _vm.value,
+                  callback: function($$v) {
+                    _vm.value = $$v
+                  },
+                  expression: "value"
+                }
               },
-              expression: "value"
-            }
-          })
+              "multi-select",
+              _vm.$attrs,
+              false
+            )
+          )
         ],
         1
       )
@@ -73349,18 +73395,11 @@ var render = function() {
               "div",
               { staticClass: "card" },
               [
-                _c("form-text-field", { attrs: { field: _vm.fields.name } }),
-                _vm._v(" "),
                 _c("form-text-field", {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: false,
-                      expression: "false"
-                    }
-                  ],
-                  attrs: { field: _vm.fields.mail_class }
+                  attrs: {
+                    field: _vm.fields.name,
+                    errors: _vm.validationErrors
+                  }
                 }),
                 _vm._v(" "),
                 _c("form-text-field", {
@@ -73372,7 +73411,25 @@ var render = function() {
                       expression: "false"
                     }
                   ],
-                  attrs: { field: _vm.fields.design }
+                  attrs: {
+                    field: _vm.fields.mail_class,
+                    errors: _vm.validationErrors
+                  }
+                }),
+                _vm._v(" "),
+                _c("form-text-field", {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: false,
+                      expression: "false"
+                    }
+                  ],
+                  attrs: {
+                    field: _vm.fields.design,
+                    errors: _vm.validationErrors
+                  }
                 })
               ],
               1
@@ -73386,29 +73443,28 @@ var render = function() {
               "div",
               { staticClass: "card" },
               [
-                _c("form-select-field-multiple", {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.variables.recipients,
-                      expression: "variables.recipients"
-                    }
-                  ],
-                  attrs: { field: _vm.fields.recipients }
-                }),
+                _vm.variables.recipients
+                  ? _c("form-select-field-multiple", {
+                      attrs: {
+                        field: _vm.fields.recipients,
+                        errors: _vm.validationErrors
+                      }
+                    })
+                  : _vm._e(),
                 _vm._v(" "),
                 _c("form-select-field-multiple", {
                   attrs: {
                     field: _vm.fields.cc,
-                    "tag-placeholder": _vm.__("Click to add email address")
+                    "tag-placeholder": _vm.__("Click to add email address"),
+                    errors: _vm.validationErrors
                   }
                 }),
                 _vm._v(" "),
                 _c("form-select-field-multiple", {
                   attrs: {
                     field: _vm.fields.bcc,
-                    "tag-placeholder": _vm.__("Click to add email address")
+                    "tag-placeholder": _vm.__("Click to add email address"),
+                    errors: _vm.validationErrors
                   }
                 })
               ],
@@ -73444,15 +73500,24 @@ var render = function() {
                   },
                   [
                     _c("form-text-field", {
-                      attrs: { field: _vm.fields["sender_name___" + locale] }
+                      attrs: {
+                        field: _vm.fields["sender_name___" + locale],
+                        errors: _vm.validationErrors
+                      }
                     }),
                     _vm._v(" "),
                     _c("form-text-field", {
-                      attrs: { field: _vm.fields["sender_email___" + locale] }
+                      attrs: {
+                        field: _vm.fields["sender_email___" + locale],
+                        errors: _vm.validationErrors
+                      }
                     }),
                     _vm._v(" "),
                     _c("form-text-field", {
-                      attrs: { field: _vm.fields["subject___" + locale] }
+                      attrs: {
+                        field: _vm.fields["subject___" + locale],
+                        errors: _vm.validationErrors
+                      }
                     }),
                     _vm._v(" "),
                     _c(
@@ -73461,14 +73526,20 @@ var render = function() {
                       [
                         _c(_vm.$config.bodyFieldComponent, {
                           tag: "component",
-                          attrs: { field: _vm.fields["body___" + locale] }
+                          attrs: {
+                            field: _vm.fields["body___" + locale],
+                            errors: _vm.validationErrors
+                          }
                         })
                       ],
                       1
                     ),
                     _vm._v(" "),
                     _c("form-file-field-multiple", {
-                      attrs: { field: _vm.fields["attachments___" + locale] }
+                      attrs: {
+                        field: _vm.fields["attachments___" + locale],
+                        errors: _vm.validationErrors
+                      }
                     })
                   ],
                   1

@@ -13,6 +13,7 @@
         hide-selected
         multiple
         taggable
+        v-bind="$attrs"
       >
         <template #no-options>
           <span></span>
@@ -48,13 +49,22 @@ export default {
 
   mounted() {
     this.value = this.field.value;
-    this.options = this.field.options;
+    this.options = this.field.options || [];
 
     this.field.fill = formData => {
       this.value.forEach(item => {
         formData.append(`${this.field.attribute}[]`, item.value);
       });
     };
+  },
+
+  watch: {
+    field: {
+      deep: true,
+      handler(field) {
+        this.options = field.options || [];
+      }
+    }
   },
 
   methods: {
