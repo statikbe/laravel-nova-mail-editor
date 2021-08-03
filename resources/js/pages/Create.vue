@@ -18,8 +18,8 @@ export default {
       sender_name: '',
       sender_email: '',
       recipients: [],
-      cc: '',
-      bcc: '',
+      cc: [],
+      bcc: [],
       attachments: []
     }
   })

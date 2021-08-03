@@ -1,7 +1,7 @@
 const path = require('path');
 const Editor = require('vue-editor-js');
 
-Nova.booting((Vue, router) => {
+Nova.booting(async (Vue, router) => {
   Vue.mixin({
     methods: {
       async getApiData(apiPath) {
@@ -23,8 +23,10 @@ Nova.booting((Vue, router) => {
 
   // @todo config uit backend laten komen
 
+  const { data } = await axios.get('/nova-vendor/nova-mail-editor/locales');
+
   Vue.prototype.$config = {
-    locales: ['en'],
+    locales: data,
     bodyFieldComponent: 'form-trix-field'
   };
 
