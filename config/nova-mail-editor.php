@@ -25,5 +25,5 @@ return [
     |
     |
     */
-    'render_engine' => 'mail',
+    'render_engine' => 'html',
 ];
