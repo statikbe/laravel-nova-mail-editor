@@ -243,7 +243,7 @@ export default {
               ...this.fields[attribute],
               name: `${this.fields[attribute].name} (${locale.toUpperCase()})`,
               attribute: localizedAttribute,
-              value: data[attribute][locale] || null
+              value: (data[attribute] ? data[attribute][locale] || null : null)
             };
           });
 
@@ -253,13 +253,14 @@ export default {
         }
       });
 
-      if ($config.bodyFieldComponent !== 'form-editor-field') {
+      //TODO implement when other editors are supported
+      /*if ($config.bodyFieldComponent !== 'form-editor-field') {
         $config.locales.forEach(locale => {
           this.fields[`body___${locale}`].value = data.body[locale]
             ? data.body[locale].blocks[0].data
             : '';
         });
-      }
+      }*/
     },
     initializeEvents() {
       let focusTimeout = null;
@@ -318,7 +319,7 @@ export default {
 
       const element = document.getElementById(focusedField);
 
-      const injectedString = `[[ ${key} ]]`;
+      const injectedString = `[[${key}]]`;
 
       //  Trix editor
       if (focusedValue === null) {
@@ -338,8 +339,11 @@ export default {
     },
     async fetchVariables() {
       const { data } = this;
+
+      const templateId = data.mail_class || this.$route.params.templateId;
+
       this.variables = await this.getApiData(
-        `/templates/${this.$route.params.templateId}/variables`
+          `/templates/${templateId}/variables`
       );
 
       const recipients = this.variables.recipients || {};
