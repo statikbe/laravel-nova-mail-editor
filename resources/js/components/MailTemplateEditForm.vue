@@ -82,7 +82,9 @@
             @click="submit"
             class="btn btn-default btn-primary inline-flex items-center relative"
           >
-            {{ __('Create mail template') }}
+            {{
+              __(`${action === 'update' ? 'Update' : 'Create'} mail template`)
+            }}
           </button>
         </div>
       </div>
@@ -179,15 +181,7 @@ export default {
   },
   methods: {
     initializeFields() {
-      this.localizedFields = [
-        'sender_name',
-        'sender_email',
-        'subject',
-        'body',
-        'attachments'
-      ];
-
-      const { $config, data, localizedFields, __ } = this;
+      const { $config, data, __ } = this;
 
       this.fields = {
         name: { attribute: 'name', name: __('Name'), required: true },
@@ -235,7 +229,7 @@ export default {
       };
 
       Object.keys(this.fields).forEach(attribute => {
-        if (localizedFields.includes(attribute)) {
+        if ($config.localizedFields.includes(attribute)) {
           $config.locales.forEach(locale => {
             const localizedAttribute = `${attribute}___${locale}`;
 
@@ -243,7 +237,7 @@ export default {
               ...this.fields[attribute],
               name: `${this.fields[attribute].name} (${locale.toUpperCase()})`,
               attribute: localizedAttribute,
-              value: data[attribute][locale] || null
+              value: data[localizedAttribute] || null
             };
           });
 
@@ -253,13 +247,14 @@ export default {
         }
       });
 
-      if ($config.bodyFieldComponent !== 'form-editor-field') {
-        $config.locales.forEach(locale => {
-          this.fields[`body___${locale}`].value = data.body[locale]
-            ? data.body[locale].blocks[0].data
-            : '';
-        });
-      }
+      // if ($config.bodyFieldComponent !== 'form-editor-field') {
+      //   $config.locales.forEach(locale => {
+      //     const localizedAttribute = `body___${locale}`;
+      //     this.fields[localizedAttribute].value = data[localizedAttribute]
+      //       ? data[localizedAttribute].blocks[0].data
+      //       : '';
+      //   });
+      // }
     },
     initializeEvents() {
       let focusTimeout = null;
@@ -291,7 +286,6 @@ export default {
         const element = event.target.closest('trix-editor');
         const parent = element.closest('[data-field]');
         const editor = element.editor;
-        const selection = document.getSelection();
 
         this.focusedField = parent ? parent.dataset.field : null;
         this.focusedValue = null;
@@ -314,7 +308,7 @@ export default {
       });
     },
     injectVariable(key) {
-      const { fields, focusedField, focusedValue, caretPosition } = this;
+      const { focusedField, focusedValue, caretPosition } = this;
 
       const element = document.getElementById(focusedField);
 
@@ -338,8 +332,10 @@ export default {
     },
     async fetchVariables() {
       const { data } = this;
+      const mailClass = this.$route.params.templateId || data.mail_class;
+
       this.variables = await this.getApiData(
-        `/templates/${this.$route.params.templateId}/variables`
+        `/templates/${mailClass}/variables`
       );
 
       const recipients = this.variables.recipients || {};
