@@ -10,8 +10,8 @@
             :field="fields.mail_class"
             :errors="validationErrors"
           />
-          <form-text-field
-            v-show="false"
+          <form-select-field
+            v-if="designs"
             :field="fields.design"
             :errors="validationErrors"
           />
@@ -165,6 +165,7 @@ export default {
     currentLocale: null,
     fields: {},
     variables: {},
+    designs: {},
     focusedField: null,
     focusedValue: null,
     caretPosition: null,
@@ -175,6 +176,7 @@ export default {
 
     this.initializeFields();
     this.fetchVariables();
+    this.fetchDesigns();
   },
   mounted() {
     this.initializeEvents();
@@ -190,7 +192,7 @@ export default {
           name: __('Mail type'),
           readonly: true
         },
-        design: { attribute: 'design', name: __('Design'), readonly: true },
+        design: { attribute: 'design', name: __('Design'), required: true },
         sender_name: {
           attribute: 'sender_name',
           name: __('Sender name'),
@@ -247,6 +249,7 @@ export default {
         }
       });
 
+      // TODO implement when other editors are supported
       // if ($config.bodyFieldComponent !== 'form-editor-field') {
       //   $config.locales.forEach(locale => {
       //     const localizedAttribute = `body___${locale}`;
@@ -312,7 +315,7 @@ export default {
 
       const element = document.getElementById(focusedField);
 
-      const injectedString = `[[ ${key} ]]`;
+      const injectedString = `[[${key}]]`;
 
       //  Trix editor
       if (focusedValue === null) {
@@ -350,6 +353,21 @@ export default {
         return option;
       });
     },
+    async fetchDesigns() {
+      const { data } = this;
+
+      this.designs = await this.getApiData(`/designs`);
+
+      // this.fields.design.value = null;
+
+      this.fields.design.options = Object.keys(this.designs).map(value => {
+        const option = { label: this.designs[value], value };
+        if (data.design === value) {
+          this.fields.design.value.push(option);
+        }
+        return option;
+      });
+    },
     submit() {
       const submitUrl = {
         create: '/mail-templates/store',
@@ -362,7 +380,10 @@ export default {
         });
       });
 
-      formData.append('mail_class', this.$route.params.templateId);
+      formData.append(
+        'mail_class',
+        this.data.mail_class || this.$route.params.templateId
+      );
 
       this.validationErrors = new Errors();
 

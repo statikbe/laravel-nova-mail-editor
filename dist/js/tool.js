@@ -64380,6 +64380,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       mailTemplateData: {
         mail_class: null,
+        design: null,
         name: null,
         subject: null,
         body: null,
@@ -64601,6 +64602,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       currentLocale: null,
       fields: {},
       variables: {},
+      designs: {},
       focusedField: null,
       focusedValue: null,
       caretPosition: null,
@@ -64612,6 +64614,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
     this.initializeFields();
     this.fetchVariables();
+    this.fetchDesigns();
   },
   mounted: function mounted() {
     this.initializeEvents();
@@ -64633,7 +64636,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
           name: __('Mail type'),
           readonly: true
         },
-        design: { attribute: 'design', name: __('Design'), readonly: true },
+        design: { attribute: 'design', name: __('Design'), required: true },
         sender_name: {
           attribute: 'sender_name',
           name: __('Sender name'),
@@ -64689,6 +64692,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         }
       });
 
+      // TODO implement when other editors are supported
       // if ($config.bodyFieldComponent !== 'form-editor-field') {
       //   $config.locales.forEach(locale => {
       //     const localizedAttribute = `body___${locale}`;
@@ -64756,7 +64760,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
       var element = document.getElementById(focusedField);
 
-      var injectedString = '[[ ' + key + ' ]]';
+      var injectedString = '[[' + key + ']]';
 
       //  Trix editor
       if (focusedValue === null) {
@@ -64813,8 +64817,49 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
       return fetchVariables;
     }(),
+    fetchDesigns: function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
+        var _this4 = this;
+
+        var data;
+        return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                data = this.data;
+                _context2.next = 3;
+                return this.getApiData('/designs');
+
+              case 3:
+                this.designs = _context2.sent;
+
+
+                // this.fields.design.value = null;
+
+                this.fields.design.options = Object.keys(this.designs).map(function (value) {
+                  var option = { label: _this4.designs[value], value: value };
+                  if (data.design === value) {
+                    _this4.fields.design.value.push(option);
+                  }
+                  return option;
+                });
+
+              case 5:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function fetchDesigns() {
+        return _ref2.apply(this, arguments);
+      }
+
+      return fetchDesigns;
+    }(),
     submit: function submit() {
-      var _this4 = this;
+      var _this5 = this;
 
       var submitUrl = {
         create: '/mail-templates/store',
@@ -64822,21 +64867,21 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       }[this.action];
 
       var formData = Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["b" /* tap */])(new FormData(), function (formData) {
-        Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["a" /* each */])(_this4.fields, function (field) {
+        Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["a" /* each */])(_this5.fields, function (field) {
           field.fill(formData);
         });
       });
 
-      formData.append('mail_class', this.$route.params.templateId);
+      formData.append('mail_class', this.data.mail_class || this.$route.params.templateId);
 
       this.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]();
 
       this.postFormData(submitUrl, formData).then(function () {
-        _this4.$router.push({ name: 'mail-index' });
-      }).catch(function (_ref2) {
-        var response = _ref2.response;
+        _this5.$router.push({ name: 'mail-index' });
+      }).catch(function (_ref3) {
+        var response = _ref3.response;
 
-        _this4.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](response.data.errors);
+        _this5.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](response.data.errors);
       });
     }
   }
@@ -72528,7 +72573,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   created: function created() {
     this.editorConfig.data = JSON.parse(JSON.stringify(this.field.value));
-    console.log(this.editorConfig.data);
   },
 
   methods: {
@@ -73395,20 +73439,14 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
-                _c("form-text-field", {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: false,
-                      expression: "false"
-                    }
-                  ],
-                  attrs: {
-                    field: _vm.fields.design,
-                    errors: _vm.validationErrors
-                  }
-                })
+                _vm.designs
+                  ? _c("form-select-field", {
+                      attrs: {
+                        field: _vm.fields.design,
+                        errors: _vm.validationErrors
+                      }
+                    })
+                  : _vm._e()
               ],
               1
             ),

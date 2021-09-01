@@ -81,6 +81,9 @@ public function boot()
 }
 ```
 
+#### (Option 3)
+A third non official option is to use a new config key in your `app.php` config. The key you can use is `supported_locales`, as in our own config. We provide this method to have a global config key of supported locales. Our translatable packages will try to use this key.
+
 ### Mail template config
 More information about the mail template config can be found in the base package: [Laravel Mail Template Engine](https://github.com/statikbe/laravel-mail-template-engine).
 

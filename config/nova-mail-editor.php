@@ -21,9 +21,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | For now our package only provides one method of saving the content: html
-    | Only edit the is you changed your html render engine key in mail-editor.php
+    | Only edit the is you changed your html render engine key
+    | in mail-template-engine.php
     |
     |
     */
-    'render_engine' => 'mail',
+    'render_engine' => 'html',
 ];
