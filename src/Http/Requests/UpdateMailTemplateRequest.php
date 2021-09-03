@@ -24,11 +24,14 @@ class UpdateMailTemplateRequest extends FormRequest
      */
     public function rules()
     {
+        dd($this->all());
         $rules = [
             'name' => ['required', 'string'],
             'recipients' => ['required', 'array'],
-            'cc' => ['nullable', 'email'], //TODO change to array when frontend is done
-            'bcc' => ['nullable', 'email'], //TODO change to array when frontend is done
+            'cc' => ['nullable', 'array'],
+            'cc.*' => ['nullable', 'email'],
+            'bcc' => ['nullable', 'array'],
+            'bcc.*' => ['nullable', 'email'],
             //'design' => ['required', 'string'],
             //'render_engine' => ['required', 'string'],
             'mail_class' => ['required', 'string' ], //TODO: validate mail_class
