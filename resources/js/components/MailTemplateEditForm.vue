@@ -10,11 +10,22 @@
             :field="fields.mail_class"
             :errors="validationErrors"
           />
-          <form-select-field
+          <default-field
             v-if="designs"
             :field="fields.design"
             :errors="validationErrors"
-          />
+          >
+            <template #field>
+              <select
+                v-model="selectedDesign"
+                class="form-control form-select w-full"
+              >
+                <option v-for="option in designOptions" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </template>
+          </default-field>
         </div>
         <h2 class="mt-4 mb-2">{{ __('Recipients') }}</h2>
         <div class="card">
@@ -166,11 +177,20 @@ export default {
     fields: {},
     variables: {},
     designs: {},
+    selectedDesign: null,
     focusedField: null,
     focusedValue: null,
     caretPosition: null,
     validationErrors: new Errors()
   }),
+  computed: {
+    designOptions() {
+      return Object.keys(this.designs).map(value => ({
+        label: this.designs[value],
+        value
+      }));
+    }
+  },
   created() {
     this.currentLocale = this.$config.locales[0] || 'en';
 
@@ -192,7 +212,14 @@ export default {
           name: __('Mail type'),
           readonly: true
         },
-        design: { attribute: 'design', name: __('Design'), required: true },
+        design: {
+          attribute: 'design',
+          name: __('Design'),
+          required: true,
+          fill: formData => {
+            formData.append('design', this.selectedDesign);
+          }
+        },
         sender_name: {
           attribute: 'sender_name',
           name: __('Sender name'),
@@ -358,14 +385,10 @@ export default {
 
       this.designs = await this.getApiData(`/designs`);
 
-      // this.fields.design.value = null;
-
-      this.fields.design.options = Object.keys(this.designs).map(value => {
-        const option = { label: this.designs[value], value };
+      Object.keys(this.designs).forEach(value => {
         if (data.design === value) {
-          this.fields.design.value.push(option);
+          this.selectedDesign = value;
         }
-        return option;
       });
     },
     submit() {

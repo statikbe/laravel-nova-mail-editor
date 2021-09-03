@@ -64569,6 +64569,17 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -64603,11 +64614,24 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       fields: {},
       variables: {},
       designs: {},
+      selectedDesign: null,
       focusedField: null,
       focusedValue: null,
       caretPosition: null,
       validationErrors: new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]()
     };
+  },
+  computed: {
+    designOptions: function designOptions() {
+      var _this = this;
+
+      return Object.keys(this.designs).map(function (value) {
+        return {
+          label: _this.designs[value],
+          value: value
+        };
+      });
+    }
   },
   created: function created() {
     this.currentLocale = this.$config.locales[0] || 'en';
@@ -64622,7 +64646,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
   methods: {
     initializeFields: function initializeFields() {
-      var _this = this;
+      var _this2 = this;
 
       var $config = this.$config,
           data = this.data,
@@ -64636,7 +64660,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
           name: __('Mail type'),
           readonly: true
         },
-        design: { attribute: 'design', name: __('Design'), required: true },
+        design: {
+          attribute: 'design',
+          name: __('Design'),
+          required: true,
+          fill: function fill(formData) {
+            formData.append('design', _this2.selectedDesign);
+          }
+        },
         sender_name: {
           attribute: 'sender_name',
           name: __('Sender name'),
@@ -64679,16 +64710,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
           $config.locales.forEach(function (locale) {
             var localizedAttribute = attribute + '___' + locale;
 
-            _this.fields[localizedAttribute] = _extends({}, _this.fields[attribute], {
-              name: _this.fields[attribute].name + ' (' + locale.toUpperCase() + ')',
+            _this2.fields[localizedAttribute] = _extends({}, _this2.fields[attribute], {
+              name: _this2.fields[attribute].name + ' (' + locale.toUpperCase() + ')',
               attribute: localizedAttribute,
               value: data[localizedAttribute] || null
             });
           });
 
-          delete _this.fields[attribute];
+          delete _this2.fields[attribute];
         } else {
-          _this.fields[attribute].value = data[attribute];
+          _this2.fields[attribute].value = data[attribute];
         }
       });
 
@@ -64703,13 +64734,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       // }
     },
     initializeEvents: function initializeEvents() {
-      var _this2 = this;
+      var _this3 = this;
 
       var focusTimeout = null;
 
       var handleFocus = function handleFocus(event) {
-        _this2.focusedField = event.target.id;
-        _this2.focusedValue = event.target.value;
+        _this3.focusedField = event.target.id;
+        _this3.focusedValue = event.target.value;
 
         if (focusTimeout) {
           clearTimeout(focusTimeout);
@@ -64717,7 +64748,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
         focusTimeout = setTimeout(function () {
           var selectionStart = event.target.selectionStart || 0;
-          _this2.caretPosition = [selectionStart, event.target.selectionEnd || selectionStart];
+          _this3.caretPosition = [selectionStart, event.target.selectionEnd || selectionStart];
         }, 100);
       };
 
@@ -64732,15 +64763,15 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         var parent = element.closest('[data-field]');
         var editor = element.editor;
 
-        _this2.focusedField = parent ? parent.dataset.field : null;
-        _this2.focusedValue = null;
+        _this3.focusedField = parent ? parent.dataset.field : null;
+        _this3.focusedValue = null;
 
         if (focusTimeout) {
           clearTimeout(focusTimeout);
         }
 
         focusTimeout = setTimeout(function () {
-          _this2.caretPosition = editor.getSelectedRange();
+          _this3.caretPosition = editor.getSelectedRange();
         }, 100);
       };
 
@@ -64776,7 +64807,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     },
     fetchVariables: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
-        var _this3 = this;
+        var _this4 = this;
 
         var data, mailClass, recipients;
         return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
@@ -64798,7 +64829,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 this.fields.recipients.options = Object.keys(recipients).map(function (value) {
                   var option = { label: recipients[value], value: value };
                   if (data.recipients.includes(value)) {
-                    _this3.fields.recipients.value.push(option);
+                    _this4.fields.recipients.value.push(option);
                   }
                   return option;
                 });
@@ -64819,7 +64850,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     }(),
     fetchDesigns: function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee2() {
-        var _this4 = this;
+        var _this5 = this;
 
         var data;
         return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee2$(_context2) {
@@ -64834,14 +64865,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 this.designs = _context2.sent;
 
 
-                // this.fields.design.value = null;
-
-                this.fields.design.options = Object.keys(this.designs).map(function (value) {
-                  var option = { label: _this4.designs[value], value: value };
+                Object.keys(this.designs).forEach(function (value) {
                   if (data.design === value) {
-                    _this4.fields.design.value.push(option);
+                    _this5.selectedDesign = value;
                   }
-                  return option;
                 });
 
               case 5:
@@ -64859,7 +64886,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       return fetchDesigns;
     }(),
     submit: function submit() {
-      var _this5 = this;
+      var _this6 = this;
 
       var submitUrl = {
         create: '/mail-templates/store',
@@ -64867,7 +64894,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       }[this.action];
 
       var formData = Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["b" /* tap */])(new FormData(), function (formData) {
-        Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["a" /* each */])(_this5.fields, function (field) {
+        Object(__WEBPACK_IMPORTED_MODULE_2_lodash_es__["a" /* each */])(_this6.fields, function (field) {
           field.fill(formData);
         });
       });
@@ -64877,11 +64904,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
       this.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"]();
 
       this.postFormData(submitUrl, formData).then(function () {
-        _this5.$router.push({ name: 'mail-index' });
+        _this6.$router.push({ name: 'mail-index' });
       }).catch(function (_ref3) {
         var response = _ref3.response;
 
-        _this5.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](response.data.errors);
+        _this6.validationErrors = new __WEBPACK_IMPORTED_MODULE_1_laravel_nova__["Errors"](response.data.errors);
       });
     }
   }
@@ -73440,11 +73467,74 @@ var render = function() {
                 }),
                 _vm._v(" "),
                 _vm.designs
-                  ? _c("form-select-field", {
+                  ? _c("default-field", {
                       attrs: {
                         field: _vm.fields.design,
                         errors: _vm.validationErrors
-                      }
+                      },
+                      scopedSlots: _vm._u(
+                        [
+                          {
+                            key: "field",
+                            fn: function() {
+                              return [
+                                _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: _vm.selectedDesign,
+                                        expression: "selectedDesign"
+                                      }
+                                    ],
+                                    staticClass:
+                                      "form-control form-select w-full",
+                                    on: {
+                                      change: function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value
+                                            return val
+                                          })
+                                        _vm.selectedDesign = $event.target
+                                          .multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      }
+                                    }
+                                  },
+                                  _vm._l(_vm.designOptions, function(option) {
+                                    return _c(
+                                      "option",
+                                      { domProps: { value: option.value } },
+                                      [
+                                        _vm._v(
+                                          "\n                " +
+                                            _vm._s(option.label) +
+                                            "\n              "
+                                        )
+                                      ]
+                                    )
+                                  }),
+                                  0
+                                )
+                              ]
+                            },
+                            proxy: true
+                          }
+                        ],
+                        null,
+                        false,
+                        4179037157
+                      )
                     })
                   : _vm._e()
               ],
