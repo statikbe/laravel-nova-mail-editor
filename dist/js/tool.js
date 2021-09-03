@@ -73313,18 +73313,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     this.options = this.field.options || [];
 
     // using formdata
-    // this.field.fill = formData => {
-    //   this.value.forEach(item => {
-    //     formData.append(`${this.field.attribute}[]`, item.value);
-    //   });
-    // };
+    this.field.fill = function (formData) {
+      _this.value.forEach(function (item) {
+        formData.append(_this.field.attribute + '[]', item.value);
+      });
+    };
 
     // as json
-    this.field.fill = function (formData) {
-      formData.append(_this.field.attribute, JSON.stringify(_this.value.map(function (item) {
-        return item.value;
-      })));
-    };
+    // this.field.fill = formData => {
+    //   formData.append(
+    //     this.field.attribute,
+    //     JSON.stringify(this.value.map(item => item.value))
+    //   );
+    // };
   },
 
 

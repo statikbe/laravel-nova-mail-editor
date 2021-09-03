@@ -52,19 +52,19 @@ export default {
     this.options = this.field.options || [];
 
     // using formdata
-    // this.field.fill = formData => {
-    //   this.value.forEach(item => {
-    //     formData.append(`${this.field.attribute}[]`, item.value);
-    //   });
-    // };
+    this.field.fill = formData => {
+      this.value.forEach(item => {
+        formData.append(`${this.field.attribute}[]`, item.value);
+      });
+    };
 
     // as json
-    this.field.fill = formData => {
-      formData.append(
-        this.field.attribute,
-        JSON.stringify(this.value.map(item => item.value))
-      );
-    };
+    // this.field.fill = formData => {
+    //   formData.append(
+    //     this.field.attribute,
+    //     JSON.stringify(this.value.map(item => item.value))
+    //   );
+    // };
   },
 
   watch: {
