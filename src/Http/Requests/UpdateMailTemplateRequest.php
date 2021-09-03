@@ -24,7 +24,6 @@ class UpdateMailTemplateRequest extends FormRequest
      */
     public function rules()
     {
-        dd($this->all());
         $rules = [
             'name' => ['required', 'string'],
             'recipients' => ['required', 'array'],
