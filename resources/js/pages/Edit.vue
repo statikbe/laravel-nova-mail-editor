@@ -20,12 +20,20 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.formData = await this.getApiData(
+      const formData = await this.getApiData(
         `/mail-templates/${this.$route.params.id}/edit`
       );
+
+      this.$config.localizedFields.forEach(field => {
+        Object.keys(formData[field] || {}).forEach(locale => {
+          formData[`${field}___${locale}`] = formData[field][locale];
+        });
+
+        delete formData[field];
+      });
+
+      this.formData = formData;
     }
   }
 };
 </script>
-
-<style></style>

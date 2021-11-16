@@ -4,18 +4,46 @@
       <div class="w-2/3 px-2 py-4">
         <h2 class="mt-4 mb-2">{{ __('General') }}</h2>
         <div class="card">
-          <form-text-field :field="fields.name" />
-          <form-text-field v-show="false" :field="fields.mail_type" />
-          <form-text-field v-show="false" :field="fields.design" />
+          <form-text-field :field="fields.name" :errors="validationErrors" />
+          <form-text-field
+            v-show="false"
+            :field="fields.mail_class"
+            :errors="validationErrors"
+          />
+          <default-field
+            v-if="designs"
+            :field="fields.design"
+            :errors="validationErrors"
+          >
+            <template #field>
+              <select
+                v-model="selectedDesign"
+                class="form-control form-select w-full"
+              >
+                <option v-for="option in designOptions" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </template>
+          </default-field>
         </div>
         <h2 class="mt-4 mb-2">{{ __('Recipients') }}</h2>
         <div class="card">
           <form-select-field-multiple
             v-if="variables.recipients"
             :field="fields.recipients"
+            :errors="validationErrors"
           />
-          <form-text-field :field="fields.cc" />
-          <form-text-field :field="fields.bcc" />
+          <form-select-field-multiple
+            :field="fields.cc"
+            :tag-placeholder="__('Click to add email address')"
+            :errors="validationErrors"
+          />
+          <form-select-field-multiple
+            :field="fields.bcc"
+            :tag-placeholder="__('Click to add email address')"
+            :errors="validationErrors"
+          />
         </div>
       </div>
     </div>
@@ -28,17 +56,28 @@
             v-show="currentLocale === locale"
             :key="locale"
           >
-            <form-text-field :field="fields[`sender_name___${locale}`]" />
-            <form-text-field :field="fields[`sender_email___${locale}`]" />
-            <form-text-field :field="fields[`subject___${locale}`]" />
+            <form-text-field
+              :field="fields[`sender_name___${locale}`]"
+              :errors="validationErrors"
+            />
+            <form-text-field
+              :field="fields[`sender_email___${locale}`]"
+              :errors="validationErrors"
+            />
+            <form-text-field
+              :field="fields[`subject___${locale}`]"
+              :errors="validationErrors"
+            />
             <div :data-field="`body___${locale}`">
               <component
                 :is="$config.bodyFieldComponent"
                 :field="fields[`body___${locale}`]"
+                :errors="validationErrors"
               />
             </div>
             <form-file-field-multiple
               :field="fields[`attachments___${locale}`]"
+              :errors="validationErrors"
             />
           </div>
         </div>
@@ -54,7 +93,9 @@
             @click="submit"
             class="btn btn-default btn-primary inline-flex items-center relative"
           >
-            {{ __('Create mail template') }}
+            {{
+              __(`${action === 'update' ? 'Update' : 'Create'} mail template`)
+            }}
           </button>
         </div>
       </div>
@@ -108,6 +149,7 @@
 </template>
 
 <script>
+import { Errors } from 'laravel-nova';
 import { tap, each } from 'lodash-es';
 
 import FormEditorjsField from './Form/EditorjsField.vue';
@@ -134,39 +176,50 @@ export default {
     currentLocale: null,
     fields: {},
     variables: {},
+    designs: {},
+    selectedDesign: null,
     focusedField: null,
     focusedValue: null,
-    caretPosition: null
+    caretPosition: null,
+    validationErrors: new Errors()
   }),
+  computed: {
+    designOptions() {
+      return Object.keys(this.designs).map(value => ({
+        label: this.designs[value],
+        value
+      }));
+    }
+  },
   created() {
     this.currentLocale = this.$config.locales[0] || 'en';
 
     this.initializeFields();
     this.fetchVariables();
+    this.fetchDesigns();
   },
   mounted() {
     this.initializeEvents();
   },
   methods: {
     initializeFields() {
-      this.localizedFields = [
-        'sender_name',
-        'sender_email',
-        'subject',
-        'body',
-        'attachments'
-      ];
-
-      const { $config, data, localizedFields, __ } = this;
+      const { $config, data, __ } = this;
 
       this.fields = {
         name: { attribute: 'name', name: __('Name'), required: true },
-        mail_type: {
-          attribute: 'mail_type',
+        mail_class: {
+          attribute: 'mail_class',
           name: __('Mail type'),
           readonly: true
         },
-        design: { attribute: 'design', name: __('Design'), readonly: true },
+        design: {
+          attribute: 'design',
+          name: __('Design'),
+          required: true,
+          fill: formData => {
+            formData.append('design', this.selectedDesign);
+          }
+        },
         sender_name: {
           attribute: 'sender_name',
           name: __('Sender name'),
@@ -184,11 +237,11 @@ export default {
         },
         cc: {
           attribute: 'cc',
-          name: __('CC')
+          name: __('CC'),
         },
         bcc: {
           attribute: 'bcc',
-          name: __('BCC')
+          name: __('BCC'),
         },
         subject: {
           attribute: 'subject',
@@ -196,14 +249,14 @@ export default {
           required: true
         },
         body: { attribute: 'body', name: __('Body'), required: true },
-        /*attachments: {
+        attachments: {
           attribute: 'attachments',
           name: __('Attachments')
-        }*/
+        }
       };
 
       Object.keys(this.fields).forEach(attribute => {
-        if (localizedFields.includes(attribute)) {
+        if ($config.localizedFields.includes(attribute)) {
           $config.locales.forEach(locale => {
             const localizedAttribute = `${attribute}___${locale}`;
 
@@ -211,23 +264,38 @@ export default {
               ...this.fields[attribute],
               name: `${this.fields[attribute].name} (${locale.toUpperCase()})`,
               attribute: localizedAttribute,
-              value: data[attribute][locale] || null
+              value: data[localizedAttribute] || null
             };
           });
 
           delete this.fields[attribute];
         } else {
+          if (attribute === 'recipients' || attribute === 'cc' || attribute === 'bcc') {
+            this.fields[attribute].value = [];
+
+            if (data[attribute]) {
+              this.fields[attribute].options = Object.keys(data[attribute]).map(key => {
+                const value = data[attribute][key];
+                const option = { label: value, value };
+                this.fields[attribute].value.push(option);
+                return option;
+              });
+              return;
+            }
+          }
           this.fields[attribute].value = data[attribute];
         }
       });
 
-      if ($config.bodyFieldComponent !== 'form-editor-field') {
-        $config.locales.forEach(locale => {
-          this.fields[`body___${locale}`].value = data.body[locale]
-            ? data.body[locale].blocks[0].data
-            : '';
-        });
-      }
+      // TODO implement when other editors are supported
+      // if ($config.bodyFieldComponent !== 'form-editor-field') {
+      //   $config.locales.forEach(locale => {
+      //     const localizedAttribute = `body___${locale}`;
+      //     this.fields[localizedAttribute].value = data[localizedAttribute]
+      //       ? data[localizedAttribute].blocks[0].data
+      //       : '';
+      //   });
+      // }
     },
     initializeEvents() {
       let focusTimeout = null;
@@ -255,11 +323,16 @@ export default {
         input.addEventListener('keyup', handleFocus);
       });
 
+      addEventListener("trix-initialize", event => {
+        const { toolbarElement } = event.target
+        const inputElement = toolbarElement.querySelector("input[name=href]")
+        inputElement.type = "text"
+      })
+
       const handleEditorFocus = event => {
         const element = event.target.closest('trix-editor');
         const parent = element.closest('[data-field]');
         const editor = element.editor;
-        const selection = document.getSelection();
 
         this.focusedField = parent ? parent.dataset.field : null;
         this.focusedValue = null;
@@ -282,11 +355,11 @@ export default {
       });
     },
     injectVariable(key) {
-      const { fields, focusedField, focusedValue, caretPosition } = this;
+      const { focusedField, focusedValue, caretPosition } = this;
 
       const element = document.getElementById(focusedField);
 
-      const injectedString = `[[ ${key} ]]`;
+      const injectedString = `[[${key}]]`;
 
       //  Trix editor
       if (focusedValue === null) {
@@ -306,20 +379,36 @@ export default {
     },
     async fetchVariables() {
       const { data } = this;
+      const mailClass = this.$route.params.templateId || data.mail_class;
+
       this.variables = await this.getApiData(
-        `/templates/${this.$route.params.templateId}/variables`
+        `/templates/${mailClass}/variables`
       );
 
-      const recipients = this.variables.recipients;
+      //Recipients
+      const recipients = this.variables.recipients || {};
 
-      this.fields.recipients.value = [];
+      Object.keys(this.fields.recipients.value).map(key => {
+        const value = this.fields.recipients.value[key];
+        if(recipients[value.label]){
+          this.fields.recipients.value[key].label = recipients[value.label];
+        }
+      });
 
       this.fields.recipients.options = Object.keys(recipients).map(value => {
         const option = { label: recipients[value], value };
-        if (data.recipients.includes(value)) {
-          this.fields.recipients.value.push(option);
-        }
         return option;
+      });
+    },
+    async fetchDesigns() {
+      const { data } = this;
+
+      this.designs = await this.getApiData(`/designs`);
+
+      Object.keys(this.designs).forEach(value => {
+        if (data.design === value) {
+          this.selectedDesign = value;
+        }
       });
     },
     submit() {
@@ -334,16 +423,19 @@ export default {
         });
       });
 
-      formData.append('mail_type', this.$route.params.templateId);
+      formData.append(
+        'mail_class',
+        this.data.mail_class || this.$route.params.templateId
+      );
 
-      this.errors = null;
+      this.validationErrors = new Errors();
 
       this.postFormData(submitUrl, formData)
         .then(() => {
           this.$router.push({ name: 'mail-index' });
         })
-        .catch(error => {
-          this.errors = error.data.errors;
+        .catch(({ response }) => {
+          this.validationErrors = new Errors(response.data.errors);
         });
     }
   }

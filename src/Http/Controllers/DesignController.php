@@ -8,6 +8,6 @@ class DesignController extends Controller
 {
     public function index()
     {
-        return config('mail-editor.designs');
+        return config('mail-template-engine.designs');
     }
 }

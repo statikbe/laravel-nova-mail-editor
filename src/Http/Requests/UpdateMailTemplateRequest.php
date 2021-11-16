@@ -27,11 +27,13 @@ class UpdateMailTemplateRequest extends FormRequest
         $rules = [
             'name' => ['required', 'string'],
             'recipients' => ['required', 'array'],
-            'cc' => ['nullable', 'email'], //TODO change to array when frontend is done
-            'bcc' => ['nullable', 'email'], //TODO change to array when frontend is done
+            'cc' => ['nullable', 'array'],
+            'cc.*' => ['nullable', 'email'],
+            'bcc' => ['nullable', 'array'],
+            'bcc.*' => ['nullable', 'email'],
             //'design' => ['required', 'string'],
             //'render_engine' => ['required', 'string'],
-            'mail_type' => ['required', 'string' ], //TODO: validate mail_type
+            'mail_class' => ['required', 'string' ], //TODO: validate mail_class
         ];
 
         $this->addTranslatableRules($rules);
@@ -45,7 +47,8 @@ class UpdateMailTemplateRequest extends FormRequest
             'body' => ['required', 'string'],
             'sender_name' => ['required', 'string'],
             'sender_email' => ['required', 'email'],
-            'attachments' => ['nullable', 'file'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['nullable', 'file'],
         ];
     }
 

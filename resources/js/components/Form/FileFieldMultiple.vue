@@ -25,8 +25,8 @@
       <span class="text-gray-50 select-none" v-html="currentLabel"></span>
 
       <div v-if="files" class="mt-4">
-        <div v-for="({ name }, index) in files" :key="index" class="mb-1">
-          <span>{{ name }}</span>
+        <div v-for="( file, index) in files" :key="index" class="mb-1">
+          <span>{{ file.name || file }}</span>
           <button
             @click="removeFile(index)"
             class="font-bold text-danger ml-1 px-1"
@@ -69,6 +69,8 @@ export default {
   }),
 
   mounted() {
+    this.files = this.value;
+
     this.field.fill = formData => {
       if (this.files) {
         this.files.forEach(file => {

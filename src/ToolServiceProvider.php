@@ -22,8 +22,7 @@ class ToolServiceProvider extends ServiceProvider
             __DIR__ . '/../config/nova-mail-editor.php' => config_path('nova-mail-editor.php'),
         ], ['nova-mail-editor', 'config']);
 
-        $supportedLocales = config(
-            'nova-mail-editor.supported_locales',
+        $supportedLocales = config('nova-mail-editor.supported_locales',
             config('app.supported_locales',['en'])
         );
 

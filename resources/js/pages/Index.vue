@@ -61,7 +61,3 @@ export default {
   }
 };
 </script>
-
-<style>
-/* Scoped Styles */
-</style>

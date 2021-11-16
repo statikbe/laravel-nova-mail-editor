@@ -50,7 +50,6 @@ export default {
   }),
   created() {
     this.editorConfig.data = JSON.parse(JSON.stringify(this.field.value));
-    console.log(this.editorConfig.data);
   },
   methods: {
     fill(formData) {

@@ -13,7 +13,12 @@
         hide-selected
         multiple
         taggable
-      />
+        v-bind="$attrs"
+      >
+        <template #no-options>
+          <span></span>
+        </template>
+      </multi-select>
     </template>
   </default-field>
 </template>
@@ -38,23 +43,40 @@ export default {
      * Return the placeholder text for the field.
      */
     placeholder() {
-      return this.field.placeholder || this.__('Choose an option');
+      return this.field.placeholder || '';
     }
   },
 
   mounted() {
-    this.value = this.field.value;
-    this.options = this.field.options;
-  },
+    this.value = this.field.value || [];
+    this.options = this.field.options || [];
 
-  methods: {
-    fill(formData) {
-      console.log(this.value);
+    // using formdata
+    this.field.fill = formData => {
       this.value.forEach(item => {
         formData.append(`${this.field.attribute}[]`, item.value);
       });
-    },
+    };
 
+    // as json
+    // this.field.fill = formData => {
+    //   formData.append(
+    //     this.field.attribute,
+    //     JSON.stringify(this.value.map(item => item.value))
+    //   );
+    // };
+  },
+
+  watch: {
+    field: {
+      deep: true,
+      handler(field) {
+        this.options = field.options || [];
+      }
+    }
+  },
+
+  methods: {
     addTag(value) {
       const option = { label: value, value };
 
