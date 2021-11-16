@@ -238,12 +238,10 @@ export default {
         cc: {
           attribute: 'cc',
           name: __('CC'),
-          options: []
         },
         bcc: {
           attribute: 'bcc',
           name: __('BCC'),
-          options: []
         },
         subject: {
           attribute: 'subject',
@@ -272,6 +270,19 @@ export default {
 
           delete this.fields[attribute];
         } else {
+          if (attribute === 'recipients' || attribute === 'cc' || attribute === 'bcc') {
+            this.fields[attribute].value = [];
+
+            if (data[attribute]) {
+              this.fields[attribute].options = Object.keys(data[attribute]).map(key => {
+                const value = data[attribute][key];
+                const option = { label: value, value };
+                this.fields[attribute].value.push(option);
+                return option;
+              });
+              return;
+            }
+          }
           this.fields[attribute].value = data[attribute];
         }
       });
@@ -311,6 +322,12 @@ export default {
         input.addEventListener('click', handleFocus);
         input.addEventListener('keyup', handleFocus);
       });
+
+      addEventListener("trix-initialize", event => {
+        const { toolbarElement } = event.target
+        const inputElement = toolbarElement.querySelector("input[name=href]")
+        inputElement.type = "text"
+      })
 
       const handleEditorFocus = event => {
         const element = event.target.closest('trix-editor');
@@ -368,15 +385,18 @@ export default {
         `/templates/${mailClass}/variables`
       );
 
+      //Recipients
       const recipients = this.variables.recipients || {};
 
-      this.fields.recipients.value = [];
+      Object.keys(this.fields.recipients.value).map(key => {
+        const value = this.fields.recipients.value[key];
+        if(recipients[value.label]){
+          this.fields.recipients.value[key].label = recipients[value.label];
+        }
+      });
 
       this.fields.recipients.options = Object.keys(recipients).map(value => {
         const option = { label: recipients[value], value };
-        if (data.recipients.includes(value)) {
-          this.fields.recipients.value.push(option);
-        }
         return option;
       });
     },

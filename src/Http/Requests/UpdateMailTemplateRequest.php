@@ -47,7 +47,8 @@ class UpdateMailTemplateRequest extends FormRequest
             'body' => ['required', 'string'],
             'sender_name' => ['required', 'string'],
             'sender_email' => ['required', 'email'],
-            'attachments' => ['nullable', 'file'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['nullable', 'file'],
         ];
     }
 
