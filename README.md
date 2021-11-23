@@ -22,7 +22,7 @@ composer require statikbe/laravel-nova-mail-editor
 ```
 
 Next enable the tool in Nova. 
-Go to `app/Providers/NovaServiceProvider.php` and add the TranslationManager to the tools.
+Go to `app/Providers/NovaServiceProvider.php` and add the Mail Editor to the tools.
 ```php
 use Statikbe\NovaMailEditor\MailEditor;
 
