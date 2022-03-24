@@ -23,9 +23,9 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.1.0",
+        "php": "^8.0|^8.1",
         "laravel/nova": "^3.0",
-        "statikbe/laravel-mail-template-engine": "^1.0"
+        "statikbe/laravel-mail-template-engine": "^1.1"
     },
     "autoload": {
         "psr-4": {
