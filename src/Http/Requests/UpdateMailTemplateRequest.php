@@ -105,15 +105,15 @@ class UpdateMailTemplateRequest extends FormRequest
         return "{$key}___{$locale}";
     }
 
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        $validated = parent::validated();
+        $validated = parent::validated($key, $default);
 
-        foreach ($validated as $key => $value){
-            [$keyWithoutLocale, $locale] = $this->removeLocaleFromKey($key);
+        foreach ($validated as $validatedKey => $value){
+            [$keyWithoutLocale, $locale] = $this->removeLocaleFromKey($validatedKey);
             if ($locale){
                 $validated[$keyWithoutLocale][$locale] = $value;
-                unset($validated[$key]);
+                unset($validated[$validatedKey]);
             }
         }
 
