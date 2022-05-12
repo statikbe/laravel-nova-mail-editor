@@ -25,6 +25,7 @@
     "require": {
         "php": "^8.0|^8.1",
         "laravel/nova": "^3.0",
+        "laravel/framework": "~9.0",
         "statikbe/laravel-mail-template-engine": "^1.1"
     },
     "autoload": {
