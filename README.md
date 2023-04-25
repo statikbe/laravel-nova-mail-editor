@@ -1,4 +1,11 @@
-# Laravel Nova Mail Editor
+---
+
+This package is **abandoned** and will no longer be maintained.
+Feel free to fork it and maintain your own version.
+
+---
+
+# ~~Laravel Nova Mail Editor~~ (Abandoned)
 
 The Laravel Nova Mail Editor allows you to easily edit the content of your transactional mails.
 
